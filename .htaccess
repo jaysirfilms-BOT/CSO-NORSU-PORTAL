@@ -1,0 +1,23 @@
+# No file listing if a folder has no index page.
+Options -Indexes
+
+# Source, docs, backups and hidden files are never served.
+<FilesMatch "(^\.|\.(sql|md|log|ini|sh|bak|old|orig|swp|zip|gz|tar|env|lock|json)$)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Hidden folders and files (.git, .svn, .env, .idea...) are never served. FilesMatch above only sees the
+# last part of the address, so files inside .git/ slipped through; this rule checks the whole address.
+RedirectMatch 404 /\.(?!well-known/)
+
+# Do not announce the PHP version.
+<IfModule mod_headers.c>
+    Header always unset X-Powered-By
+    Header always unset Server
+</IfModule>

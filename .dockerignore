@@ -1,0 +1,15 @@
+# Nothing in this list is copied into the Docker image.
+.git
+.gitignore
+.dockerignore
+.github
+.env
+*.md
+test_mail.php
+config/secrets.php
+private/ids/*
+!private/ids/.gitkeep
+database
+*.sql
+*.bak
+*.zip
