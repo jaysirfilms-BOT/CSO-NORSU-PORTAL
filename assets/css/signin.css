@@ -1,0 +1,284 @@
+/* =====================================================================
+   SIGN-IN PAGES (login, register, faculty_login, admin_login,
+   forgot_password): one shared shell.
+   Full-screen plain background on phones, a bordered panel on wider
+   screens, square edges, the site's green. Every class starts with
+   "hub-". Loaded only on pages that set $auth_layout.
+   ===================================================================== */
+
+/* Aliases of the site tokens, for the small inline style blocks on these pages
+   (register's switch, password checklist and terms line) so they stay in step
+   with the theme and the accent picker. */
+html[data-theme] .hub-page:not(#_) {
+    --hub-accent:    var(--ui-accent);
+    --hub-accent-on: var(--ui-accent-hover);
+    --hub-border:    var(--ui-border);
+    --hub-ink:       var(--ui-ink);
+    --hub-muted:     var(--ui-muted);
+    --hub-surface:   var(--ui-surface);
+    --hub-on-accent: #fff;
+}
+html[data-theme="dark"] .hub-page:not(#_) { --hub-on-accent: #0F1512; }
+
+html[data-theme] .hub-page:not(#_) {
+    display: flex; flex-direction: column; align-items: center;
+    /* Centred in the screen; "safe" falls back to the top when the form is
+       taller than the viewport, so Create account never loses its first rows. */
+    justify-content: flex-start;
+    justify-content: safe center;
+    min-height: 100vh; min-height: 100dvh; width: 100%; box-sizing: border-box;
+    background: var(--ui-surface);
+    padding: calc(env(safe-area-inset-top, 0px) + 56px) 22px calc(env(safe-area-inset-bottom, 0px) + 28px);
+}
+
+/* ---------- Card ---------- */
+html[data-theme] .hub-card:not(#_) {
+    width: 100%; max-width: 440px; margin: 0 auto;
+    background: none; border: 0; border-radius: 0; box-shadow: none; padding: 0;
+    text-align: left;
+}
+
+/* ---------- Brand ---------- */
+.hub-brand { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 14px; margin: 0 0 30px; }
+.hub-brand img { width: 52px; height: 52px; object-fit: contain; flex: none; }
+.hub-brand-text { line-height: 1.15; text-align: left; }
+html[data-theme] .hub-name:not(#_) {
+    /* It is the page's <h1>; line-height and wrap are pinned so the global
+       h1 rules do not shift it from how it looked as a paragraph. */
+    margin: 0; font-size: 1.45rem; font-weight: 700; letter-spacing: .06em; color: var(--ui-ink);
+    line-height: 1.55; overflow-wrap: anywhere;
+}
+html[data-theme] .hub-org:not(#_) {
+    margin: 4px 0 0; font-size: .78rem; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ui-accent);
+}
+
+/* Small line under the brand naming which sign-in this is (faculty, admin) */
+html[data-theme] .hub-kicker:not(#_) {
+    margin: -18px 0 26px; text-align: center;
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ui-muted);
+}
+
+/* A sentence of explanation under the kicker */
+html[data-theme] .hub-lead:not(#_) {
+    margin: 0 0 26px; text-align: center;
+    font-size: .88rem; line-height: 1.5; color: var(--ui-muted);
+}
+/* A footnote under a button */
+html[data-theme] .hub-help:not(#_) {
+    margin: 12px 0 0; text-align: center;
+    font-size: .8rem; line-height: 1.5; color: var(--ui-muted);
+}
+
+/* ---------- Fields ---------- */
+.hub-form { display: block; }
+.hub-field { position: relative; margin-bottom: 24px; }
+.hub-inputwrap { position: relative; }
+
+/* Small caption above a field. Log in has none (its placeholders say it all);
+   Create account uses them, since it asks for a lot at once. */
+html[data-theme] .hub-flabel:not(#_) {
+    display: block; margin: 0 0 2px;
+    font-size: .76rem; font-weight: 700; letter-spacing: .02em; color: var(--ui-muted);
+}
+html[data-theme] .hub-opt:not(#_) { font-weight: 500; text-transform: none; opacity: .8; }
+
+html[data-theme] .hub-field input[type="text"]:not(#_),
+html[data-theme] .hub-field input[type="email"]:not(#_),
+html[data-theme] .hub-field input[type="password"]:not(#_),
+html[data-theme] .hub-field select:not(#_) {
+    width: 100%; box-sizing: border-box; min-height: 0; height: auto;
+    padding: 10px 34px 10px 0;
+    border: none; border-bottom: 1px solid var(--ui-border); border-radius: 0;
+    background: none; box-shadow: none; outline: none;
+    font-size: .98rem; font-family: inherit; color: var(--ui-ink);
+    transition: border-color .15s ease;
+}
+/* mobile.css pads every field 14px on each side for its boxed inputs; these are
+   underlines, so they sit flush with the rest of the column. */
+html[data-theme] .hub-field :is(input, select, textarea):not(#_) { padding-left: 0 !important; padding-right: 34px !important; }
+html[data-theme] .hub-field select:not(#_) { padding-right: 8px !important; }
+html[data-theme] .hub-field input:not(#_)::placeholder { color: var(--ui-muted); opacity: 1; }
+html[data-theme] .hub-field input:not(#_):focus,
+html[data-theme] .hub-field select:not(#_):focus { border-bottom-color: var(--ui-accent); box-shadow: none; background: none; }
+html[data-theme] .hub-field input:not(#_):disabled { color: var(--ui-muted); opacity: 1; }
+
+/* Trailing icon / show-password button, sitting on the field's baseline */
+.hub-field .hub-ico,
+html[data-theme] .hub-field .pw-toggle:not(#_) {
+    position: absolute; right: 0; bottom: 8px;
+    width: 26px; height: 26px; display: grid; place-items: center;
+    padding: 0; margin: 0; border: none; border-radius: 0; background: none; box-shadow: none;
+    color: var(--ui-muted); cursor: pointer;
+}
+.hub-field .hub-ico { pointer-events: none; }
+.hub-field .icon { width: 19px; height: 19px; }
+html[data-theme] .hub-field .pw-toggle:not(#_):hover { color: var(--ui-ink); }
+
+/* The visible label is the placeholder; the real label stays for screen readers. */
+.hub-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- Remember / forgot ---------- */
+.hub-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 22px; }
+html[data-theme] .hub-remember:not(#_) {
+    display: flex; align-items: center; gap: 8px; margin: 0;
+    font-size: .84rem; font-weight: 600; color: var(--ui-ink); cursor: pointer;
+}
+html[data-theme] .hub-remember input[type="checkbox"]:not(#_) {
+    width: 16px; height: 16px; margin: 0; flex: none; accent-color: var(--ui-accent);
+}
+html[data-theme] a.hub-link:not(#_) {
+    font-size: .84rem; font-weight: 700; color: var(--ui-accent); text-decoration: none;
+}
+html[data-theme] a.hub-link:not(#_):hover { text-decoration: underline; }
+
+/* ---------- Button ---------- */
+html[data-theme] .hub-btn:not(#_) {
+    display: block; width: 100%; min-height: 54px; padding: 14px 18px;
+    border: 1px solid var(--ui-accent); border-radius: 0;
+    background: var(--ui-accent); color: #fff;
+    font-size: 1rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; box-shadow: none;
+    transition: background .15s ease, border-color .15s ease;
+}
+html[data-theme] .hub-btn:not(#_):hover { background: var(--ui-accent-hover); border-color: var(--ui-accent-hover); }
+html[data-theme] .hub-btn + .hub-btn:not(#_) { margin-top: 10px; }
+
+/* Second choice on a page that offers two (e.g. "I already have a code") */
+html[data-theme] .hub-btn.hub-btn-outline:not(#_) {
+    background: none; border-color: var(--ui-border); color: var(--ui-ink); font-weight: 600;
+}
+html[data-theme] .hub-btn.hub-btn-outline:not(#_):hover { border-color: var(--ui-accent); color: var(--ui-accent); background: none; }
+html[data-theme] .hub-btn:not(#_):focus-visible { outline: 3px solid var(--ui-accent); outline-offset: 2px; }
+html[data-theme="dark"] .hub-btn:not(#_) { color: #0F1512; }
+
+/* ---------- Card foot ---------- */
+html[data-theme] .hub-foot:not(#_) {
+    margin: 18px 0 0; text-align: center; font-size: .86rem; color: var(--ui-muted);
+}
+
+/* ---------- Links under the card ---------- */
+.hub-extra { width: 100%; max-width: 440px; margin: 26px auto 0; display: grid; gap: 10px; text-align: center; }
+html[data-theme] a.hub-extra-link:not(#_) {
+    display: block; min-height: 48px; padding: 13px 16px;
+    border: 1px solid var(--ui-border); border-radius: 0;
+    background: var(--ui-surface); color: var(--ui-ink);   /* same fill as the card */
+    font-size: .92rem; font-weight: 700; text-decoration: none;
+    transition: border-color .15s ease, color .15s ease;
+}
+html[data-theme] a.hub-extra-link:not(#_):hover { border-color: var(--ui-accent); color: var(--ui-accent); }
+html[data-theme] a.hub-extra-link.hub-extra-plain:not(#_) {
+    min-height: 0; border-color: transparent; background: none;
+    color: var(--ui-muted); font-weight: 600; font-size: .88rem;
+}
+html[data-theme] a.hub-extra-link.hub-extra-plain:not(#_):hover { color: var(--ui-accent); }
+
+/* ---------- Alerts inside the card ---------- */
+html[data-theme] .hub-card .alert:not(#_) {
+    margin: 0 0 18px; padding: 10px 14px; border-radius: 0;
+    font-size: .86rem; line-height: 1.4; border: 1px solid transparent;
+}
+html[data-theme] .hub-card .alert-error:not(#_)   { background: rgba(217, 45, 32, .08); border-color: rgba(217, 45, 32, .3); color: #B4231B; }
+html[data-theme] .hub-card .alert-success:not(#_) { background: rgba(18, 140, 80, .08); border-color: rgba(18, 140, 80, .3); color: #0F7A46; }
+html[data-theme] .hub-card .alert-warning:not(#_) { background: rgba(180, 120, 10, .10); border-color: rgba(180, 120, 10, .32); color: #8A5A08; }
+html[data-theme="dark"] .hub-card .alert-warning:not(#_) { color: #F0C475; }
+html[data-theme="dark"] .hub-card .alert-error:not(#_)   { color: #FF9A92; }
+html[data-theme="dark"] .hub-card .alert-success:not(#_) { color: #68D9A1; }
+
+/* ---------- Theme switch (same spot as the Create account page) ---------- */
+html[data-theme] .hub-theme:not(#_) {
+    position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 14px; z-index: 20;
+    width: 42px; height: 42px; display: grid; place-items: center;
+    border: 1px solid var(--ui-border); border-radius: 0;
+    background: var(--ui-surface); color: var(--ui-muted); cursor: pointer;
+}
+
+/* =====================================================================
+   CREATE ACCOUNT (register.php) — the same shell with more fields
+   ===================================================================== */
+
+/* Numbered section heading: small, uppercase, in the accent, over a hairline */
+html[data-theme] .hub-shead:not(#_) {
+    margin: 26px 0 18px; padding: 0 0 8px;
+    border-bottom: 1px solid var(--ui-border);
+    font-size: .92rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ui-accent);
+}
+html[data-theme] .hub-shead:first-of-type:not(#_) { margin-top: 4px; }
+
+/* Student / Faculty switch: two flat buttons, the chosen one filled.
+   Carries :not(#_) so the site-wide label and button rules in ui.css,
+   which have an id's worth of specificity, do not flatten it. */
+.hub-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+html[data-theme] .hub-seg .hub-seg-opt:not(#_) {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    margin: 0; padding: 12px 10px; cursor: pointer; user-select: none;
+    border: 1px solid var(--ui-border); border-radius: 0; background: none; box-shadow: none;
+    font-size: .88rem; font-weight: 600; color: var(--ui-muted);
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+html[data-theme] .hub-seg .hub-seg-opt + .hub-seg-opt:not(#_) { border-left: 0; }
+html[data-theme] .hub-seg .hub-seg-opt:not(.is-on):not(#_):hover { color: var(--ui-ink); }
+html[data-theme] .hub-seg .hub-seg-opt.is-on:not(#_) {
+    background: var(--ui-accent); border-color: var(--ui-accent); color: #fff; font-weight: 700;
+}
+html[data-theme] .hub-seg .hub-seg-opt.is-on:not(#_) span { color: inherit; }
+html[data-theme="dark"] .hub-seg .hub-seg-opt.is-on:not(#_) { color: #0F1512; }
+.hub-seg-opt input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.hub-seg:focus-within .hub-seg-opt.is-on { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+@media (max-width: 420px) {
+    html[data-theme] .hub-seg .hub-seg-opt:not(#_) { font-size: .8rem; padding: 12px 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    html[data-theme] .hub-seg .hub-seg-opt:not(#_) { transition: none; }
+}
+
+/* Required marker */
+html[data-theme] .hub-req:not(#_) { color: #D92D20; font-weight: 700; }
+html[data-theme="dark"] .hub-req:not(#_) { color: #FF8A80; }
+
+/* Field grids: one column on a phone, two or four once there is room */
+.hub-grid { display: grid; grid-template-columns: 1fr; gap: 0 22px; }
+@media (min-width: 560px) {
+    .hub-grid-2 { grid-template-columns: 1fr 1fr; }
+    .hub-grid-4 { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 820px) {
+    .hub-grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* The faculty note under the swapped fields */
+html[data-theme] .hub-note:not(#_) {
+    margin: -8px 0 20px; font-size: .8rem; line-height: 1.5; color: var(--ui-muted);
+}
+
+/* Terms and conditions tick box */
+html[data-theme] .hub-check:not(#_) {
+    display: flex; align-items: center; gap: 10px; margin: 4px 0 22px;
+    font-size: .84rem; line-height: 1.5; color: var(--ui-ink); cursor: pointer;
+}
+html[data-theme] .hub-check input[type="checkbox"]:not(#_) {
+    width: 16px; height: 16px; margin: 0; flex: none; accent-color: var(--ui-accent);
+}
+
+/* ---------- Wider screens: a panel on the page background, like Create account ---------- */
+@media (min-width: 641px) {
+    html[data-theme] .hub-page:not(#_) {
+        justify-content: center; background: var(--ui-surface-alt); padding: 48px 16px;
+    }
+    html[data-theme] .hub-card:not(#_) {
+        max-width: 420px;
+        background: var(--ui-surface); border: 1px solid var(--ui-border);
+        padding: 36px 32px 28px;
+    }
+    html[data-theme] .hub-card.hub-card-wide:not(#_) { max-width: 900px; padding: 40px 44px 32px; }
+    html[data-theme] .hub-theme:not(#_) { position: fixed; top: 14px; }
+    /* the links under the card line up with the card's edges */
+    .hub-extra { max-width: 420px; }
+    .hub-card-wide ~ .hub-extra { max-width: 900px; }
+    /* The page is a column of sections, so the one button stays its own width */
+    html[data-theme] .hub-card-wide .hub-btn:not(#_) { max-width: 320px; margin: 6px auto 0; }
+    /* the Student / Faculty switch sits in one column, not across the card */
+    html[data-theme] .hub-card-wide .hub-seg:not(#_) { max-width: 420px; }
+}
