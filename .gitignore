@@ -1,6 +1,0 @@
-config/secrets.php
-private/ids/*
-!private/ids/.gitkeep
-.env
-*.sql.bak
-*.bak

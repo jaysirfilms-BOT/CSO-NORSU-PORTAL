@@ -1,9 +1,0 @@
-# Private files (NORSU ID photos). Nobody can open these from a browser;
-# they are shown only through dashboard/id_image.php to the owner and admins.
-<IfModule mod_authz_core.c>
-    Require all denied
-</IfModule>
-<IfModule !mod_authz_core.c>
-    Order allow,deny
-    Deny from all
-</IfModule>
